@@ -1,5 +1,6 @@
 
 import java.time.LocalDate;
+import java.util.Arrays;
 import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -95,10 +96,8 @@ public class Main {
                             hall3[i][j] = null;
                         }
                     }
-                    for (int i = 0; i < bookingHistory.length; i++) {
-                        for (int j = 0; j < bookingHistory[i].length; j++) {
-                            bookingHistory[i][j] = null;
-                        }
+                    for (String[] strings : bookingHistory) {
+                        Arrays.fill(strings, null);
                     }
                 }
                 case "e" -> displayBookingHistory(bookingHistory);
@@ -202,31 +201,37 @@ public class Main {
     }
     private static void bookSeat(String hall , Scanner scanner, String[][] array ,String[][] bookingHistory) {
         String regex = "^[a-zA-Z]+$";
+        boolean isBoolean = true;
         String userInput = hallMenu(scanner);
         String[] seatEntries = userInput.split(",");
         System.out.print("> Please enter Student ID :");
         String userID = scanner.nextLine();
         System.out.println("-+".repeat(25));
-        System.out.print("> Are You sure to book? (Y/n)");
-        String userOp = scanner.nextLine();
-        if(isValidOptionInput(userOp, regex) && userOp.equalsIgnoreCase("Y")) {
-            for (String seatEntry : seatEntries) {
-                String[] splitInput = seatEntry.split("-");
-                int rowIndex = splitInput[0].charAt(0) - 'A';
-                int colIndex = Integer.parseInt(splitInput[1]) - 1;
-                if (array[rowIndex][colIndex] == null) {
-                    array[rowIndex][colIndex] = "BO";
-                    System.out.println("# [" + seatEntry.toUpperCase() + "] booked successfully");
-                    addToHistory(hall, userID, seatEntry, bookingHistory);
-                } else {
-                    System.out.println("# [" + seatEntry.toUpperCase() + "] is already booked.");
+        do {
+            System.out.print("> Are You sure to book? (Y/n)");
+            String userOp = scanner.nextLine();
+            if(isValidOptionInput(userOp, regex) && userOp.equalsIgnoreCase("Y")) {
+                for (String seatEntry : seatEntries) {
+                    String[] splitInput = seatEntry.split("-");
+                    int rowIndex = splitInput[0].charAt(0) - 'A';
+                    int colIndex = Integer.parseInt(splitInput[1]) - 1;
+                    if (array[rowIndex][colIndex] == null) {
+                        array[rowIndex][colIndex] = "BO";
+                        System.out.println("# [" + seatEntry.toUpperCase() + "] booked successfully");
+                        addToHistory(hall, userID, seatEntry, bookingHistory);
+                    } else {
+                        System.out.println("# [" + seatEntry.toUpperCase() + "] is already booked.");
+                    }
                 }
+                isBoolean = false;
+            } else if(userOp.equalsIgnoreCase("N")) {
+                isBoolean = false;
+                System.out.println("Booking is Cancel");
+            } else {
+                System.out.println("Please Choose Option (Y/n)");
+
             }
-        } else if(userOp.equalsIgnoreCase("N")) {
-            System.out.println("Booking is Cancel");
-        } else {
-            System.out.println("Please Choose Option (Y/n)");
-        }
+        }while(isBoolean);
     }
     private static void displayBookingHistory(String[][] bookingHistory) {
         boolean hasHistory = false;
